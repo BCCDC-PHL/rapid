@@ -13,58 +13,48 @@ import uuid
 def run_pipeline(config):
     """
     Initiate pipeline run
-    input: {"name": "pipeline-name", "revision": "v0.1.0", "pipeline_launch_dir": "/home/user/analysis", "pipeline_params": {"input": "input_data", "output": "output_data"}}
-    output: None
+    input: 
+      config: {"name": "pipeline-name", "revision": "v0.1.0", "pipeline_launch_dir": "/home/user/analysis", "pipeline_params": {"input": "input_data", "output": "output_data"}}
+    output: ({config}, 0)
     """
-    for flag, value in config['pipeline_params'].items():
+    for flag, value in config['flagged_arguments'].items():
         assert value
 
     now = datetime.datetime.now()
     today_iso8601_str = now.strftime('%Y-%m-%d') 
-    pipeline_run_id = str(uuid.uuid4())
-    pipeline_run_name = config['name'].replace('/', '_') + "--" + pipeline_run_id
+    command_invocation_id = str(uuid.uuid4())
 
-    config['work_dir_basename'] = "work." + pipeline_run_name
-    
     command = [
-        "nextflow",
-        "run",
-        config['name'],
-        "-revision", config['revision'],
-        "-profile", "conda",
-        "--cache", os.path.expandvars("${HOME}/.conda/envs"),
-        "-work-dir", config['work_dir_basename'],
+        config['base_command']
     ]
-    
-    if 'create_trace' in config and config['create_trace']:
-        trace_dir = os.path.join("rapid_analysis_logs", "nextflow_traces")
-        trace_filename = today_iso8601_str + "_" + pipeline_run_name + "--trace.txt"
-        command.extend([
-            "-with-trace", os.path.join(trace_dir, trace_filename)
-        ])
 
-    if 'create_report' in config and config['create_report']:
-        report_dir = os.path.join("rapid_analysis_logs", "nextflow_reports")
-        report_filename = today_iso8601_str + "_" + pipeline_run_name + "--report.html"
-        command.extend([
-            "-with-report", os.path.join(report_dir, report_filename)
-        ])
-        
-    for flag, value in config['pipeline_params'].items():
-        command.append("--" + flag)
+    if 'subcommand' in config:
+        command.append(config['subcommand'])
+
+    for argument in config['positional_arguments_before_flagged_arguments']:
+        command.append(argument)
+
+    for flag, value in config['flagged_arguments'].items():
+        command.append(flag)
         command.append(value)
 
-    pipeline_exit_code = None
+    exit_code = None
     try:
-        pipeline_exit_code = subprocess.check_call(command, cwd=config['pipeline_launch_dir'])
+        config['timestamp_command_invoked'] = datetime.datetime.now().isoformat()
+        exit_code = subprocess.check_call(command, cwd=config['command_invocation_directory'])
     except subprocess.CalledProcessError as e:
         sys.stderr.write("Error running command: " + " ".join(command))
 
-    return (config, pipeline_exit_code)
+    config['timestamp_command_completed'] = datetime.datetime.now().isoformat()
+
+    return (config, exit_code)
 
 
-def remove_pipeline_work_dir(config):
-    work_dir_path = os.path.join(config['pipeline_launch_dir'], config['work_dir_basename'])
+def remove_nextflow_work_dir(config):
+    if '-work-dir' in config['flagged_arguments']:
+        work_dir_path = config['flagged_arguments']['-work-dir']
+    else:
+        work_dir_path = os.path.join(config['command_invocation_directory'], 'work')
     print("removing pipeline work dir")
     try:
         shutil.rmtree(work_dir_path)
@@ -73,7 +63,7 @@ def remove_pipeline_work_dir(config):
 
 
 def remove_nextflow_logs(config):
-    nextflow_logs = glob.glob(os.path.join(config['pipeline_launch_dir'], ".nextflow*"))
+    nextflow_logs = glob.glob(os.path.join(config['command_invocation_directory'], ".nextflow*"))
     print("removing nextflow logs")
     for log in nextflow_logs:
         try:
@@ -86,13 +76,17 @@ def remove_nextflow_logs(config):
         except Exception as e:
             print(e)
 
-
-def cleanup(config):
+def nextflow_cleanup(config):
     if 'remove_pipeline_work_dir' in config and config['remove_pipeline_work_dir']:
         remove_pipeline_work_dir(config)
 
     if 'remove_nextflow_logs' in config and config['remove_nextflow_logs']:
         remove_nextflow_logs(config)
+
+
+def cleanup(config):
+    if config['base_command'] == 'nextflow':
+        nextflow_cleanup(config)
 
 
 def main():
