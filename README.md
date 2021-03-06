@@ -1,4 +1,4 @@
-# RAPID: Routine Automation of Pipelines for Illumina Data
+# RAPID: RAPID Analysis and Processing of Incoming Data
 
 A system for automatically running arbitrary Nextflow pipelines.
 
