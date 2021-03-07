@@ -2,7 +2,7 @@
   <img src="docs/images/RAPID_logo.png">
 </p>
 
-# RAPID Analysis and Processing of Incoming Data
+<h1 align="center">RAPID Analysis and Processing of Incoming Data</h1>
 
 A system for automatically running arbitrary Nextflow pipelines.
 
