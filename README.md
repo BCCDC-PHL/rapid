@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/RAPID_logo.png">
+</p>
+
 # RAPID: RAPID Analysis and Processing of Incoming Data
 
 A system for automatically running arbitrary Nextflow pipelines.
