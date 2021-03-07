@@ -11,24 +11,46 @@ import subprocess
 import uuid
 
 
-def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    args = parser.parse_args()
+def create_completion_message(messages):
+    num_commands_invoked_by_base_command = {}
+    commands = [message for message in messages if message['message_type'] == 'command']
+    for command in commands:
+        if command['base_command'] in num_commands_invoked_by_base_command:
+            num_commands_invoked_by_base_command[command['base_command']] += 1
+        else:
+            num_commands_invoked_by_base_command[command['base_command']] = 1
 
-    commands = []
-    for line in sys.stdin:
-        try:
-            command_config = json.loads(line.rstrip())
-            commands.append(command_config)
-        except Exception as e:
-            pass
+    commands_by_command_invocation_id = {command['command_invocation_id']: command for command in commands}
 
     timestamp_completed = datetime.datetime.now().isoformat()
     completion_message = {
         "timestamp_completed": timestamp_completed,
-        "num_commands_invoked": len(commands)
+        "num_commands_invoked": len(commands),
+        "num_commands_invoked_by_base_command": num_commands_invoked_by_base_command,
+        "commands_by_command_invocation_id": commands_by_command_invocation_id,
     }
-    print(json.dumps(completion_message))
+
+    return completion_message
+
+
+def main():
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    args = parser.parse_args()
+
+    messages = []
+    for line in sys.stdin:
+        try:
+            message = json.loads(line.rstrip())
+            if message['message_type'] == 'sentinel':
+                completion_message = create_completion_message(messages)
+                with open(message['completion_marker_file'], 'w') as f:
+                    json.dump(completion_message, f, indent=4, sort_keys=True)
+                messages = []
+            else:
+                messages.append(message)
+        except Exception as e:
+            pass
+
 
 if __name__ == '__main__':
     main()
