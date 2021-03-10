@@ -92,10 +92,10 @@ def remove_nextflow_logs(message):
 
 
 def nextflow_cleanup(message):
-    if 'remove_pipeline_work_dir' in message and message['remove_pipeline_work_dir']:
-        remove_pipeline_work_dir(message)
-
-    if 'remove_nextflow_logs' in message and message['remove_nextflow_logs']:
+    if 'remove_command_tmp_directories' in message and message['remove_command_tmp_directories']:
+        remove_nextflow_work_dir(message)
+        
+    if 'remove_command_logs' in message and message['remove_command_logs']:
         remove_nextflow_logs(message)
 
 
