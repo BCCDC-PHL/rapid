@@ -8,5 +8,5 @@
 	    "string"
 	]
     },
-    "lambda": "lambda: filter_context: re.search(filter_context['pattern'], filter_context['string'])"
+    "lambda": "lambda x: re.search(x['pattern'], x['value'])"
 }

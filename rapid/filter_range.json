@@ -9,5 +9,5 @@
 	    "less_than"
 	]
     },
-    "lambda": "lambda filter_context: filter_context['greater_than'] < filter_context['value'] and filter_context['value'] < filter_context['less_than']"
+    "lambda": "lambda x: x['greater_than'] < x['value'] and x['value'] < x['less_than']"
 }

@@ -1,0 +1,11 @@
+{
+    "keys": [
+	"filter_context",
+	"value"
+    ],
+    "message_keys": [
+	"flagged_arguments",
+	"--run_dir"
+    ],
+    "lambda": "lambda x: [line.strip().rstrip(',').split(',')[-1] for line in open(os.path.join(x, 'SampleSheet.csv')) if re.search('Experiment Name', line.strip().rstrip(','))][0]"
+}
