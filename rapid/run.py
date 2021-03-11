@@ -18,7 +18,8 @@ def run_command(message):
     output: {message}
     """
     now = datetime.datetime.now()
-    today_iso8601_str = now.strftime('%Y-%m-%d') 
+    today_iso8601_str = now.strftime('%Y-%m-%d')
+    message['message_type'] = "command_invocation"
     message['command_invocation_id'] = str(uuid.uuid4())
 
     command = [
@@ -74,7 +75,7 @@ def remove_nextflow_work_dir(message):
     try:
         shutil.rmtree(work_dir_path)
     except Exception as e:
-        pass
+        raise(e)
 
 
 def remove_nextflow_logs(message):
@@ -88,14 +89,15 @@ def remove_nextflow_logs(message):
             else:
                 pass
         except Exception as e:
-            pass
+            raise(e)
 
 
 def nextflow_cleanup(message):
-    if 'remove_command_tmp_directories' in message and message['remove_command_tmp_directories']:
+    cleanup_options = message['cleanup_options']
+    if 'remove_command_tmp_directories' in cleanup_options and cleanup_options['remove_command_tmp_directories']:
         remove_nextflow_work_dir(message)
         
-    if 'remove_command_logs' in message and message['remove_command_logs']:
+    if 'remove_command_logs' in cleanup_options and cleanup_options['remove_command_logs']:
         remove_nextflow_logs(message)
 
 
@@ -111,7 +113,7 @@ def main():
     for line in sys.stdin:
         try:
             message = json.loads(line.rstrip())
-            if message['message_type'] == 'command':
+            if message['message_type'] == 'command_creation':
                 message = run_command(message)
                 cleanup(message)
             elif message['message_type'] == 'sentinel':
@@ -121,5 +123,5 @@ def main():
             cleanup(message)
 
 
-if __name__ == '__main__':        
+if __name__ == '__main__':
     main()
