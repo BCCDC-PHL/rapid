@@ -1,0 +1,12 @@
+{
+    "lambda_args": [
+	"filter_context"
+    ],
+    "required_arg_keys": {
+	"filter_context": [
+	    "pattern",
+	    "string"
+	]
+    },
+    "lambda": "lambda x: re.search(x['pattern'], x['value'])"
+}

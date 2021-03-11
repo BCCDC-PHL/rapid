@@ -1,0 +1,12 @@
+{
+    "message_type": "command_creation",
+    "keys": [
+	"filter_context",
+	"value"
+    ],
+    "message_keys": [
+	"flagged_arguments",
+	"--outdir"
+    ],
+    "lambda": "lambda x: x"
+}
