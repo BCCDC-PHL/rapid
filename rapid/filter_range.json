@@ -1,0 +1,13 @@
+{
+    "lambda_args": [
+	"filter_context"
+    ],
+    "required_arg_keys": {
+	"filter_context": [
+	    "greater_than",
+	    "value",
+	    "less_than"
+	]
+    },
+    "lambda": "lambda filter_context: filter_context['greater_than'] < filter_context['value'] and filter_context['value'] < filter_context['less_than']"
+}
