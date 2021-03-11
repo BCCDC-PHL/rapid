@@ -8,6 +8,7 @@ import os
 import shutil
 import sys
 import subprocess
+import time
 import uuid
 
 def run_command(message):
@@ -73,6 +74,7 @@ def remove_nextflow_work_dir(message):
     else:
         work_dir_path = os.path.join(message['command_invocation_directory'], 'work')
     try:
+        time.sleep(10) # wait for filesystem latency to settle
         shutil.rmtree(work_dir_path)
     except Exception as e:
         raise(e)
