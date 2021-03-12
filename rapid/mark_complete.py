@@ -43,11 +43,12 @@ def main():
         try:
             message = json.loads(line.rstrip())
             if message['message_type'] == 'sentinel':
-                completion_message = create_completion_message(messages)
-                completion_message['correlation_id'] = message['correlation_id']
-                with open(message['context']['completion_marker_file'], 'w') as f:
-                    json.dump(completion_message, f, indent=4, sort_keys=True)
-                messages = []
+                if messages:
+                    completion_message = create_completion_message(messages)
+                    completion_message['correlation_id'] = message['correlation_id']
+                    with open(message['context']['completion_marker_file'], 'w') as f:
+                        json.dump(completion_message, f, indent=4, sort_keys=True)
+                    messages = []
             else:
                 messages.append(message)
         except Exception as e:
