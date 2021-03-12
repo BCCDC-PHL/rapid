@@ -25,6 +25,7 @@ def main():
             else:
                 message_type = config['message_type']
             if message['message_type'] != message_type:
+                print(json.dumps(message))
                 continue
             if 'filter_context' in message and message['filter_context'] is not None:
                 if filter_function(message['filter_context']):
