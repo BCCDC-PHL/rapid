@@ -1,0 +1,12 @@
+{
+    "lambda_args": [
+	"filter_context"
+    ],
+    "required_arg_keys": {
+	"filter_context": [
+	    "value",
+	    "should_exist?"
+	]
+    },
+    "lambda": "lambda x: x['should_exist?'] if  os.path.exists(x['value'])  else not x['should_exist?']"
+}
