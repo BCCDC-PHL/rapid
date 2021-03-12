@@ -22,6 +22,17 @@ def nested_set(dic, keys, value):
     dic[keys[-1]] = value
 
 
+def parse_value(value):
+    output_value = value
+    value_lower = value.lower()
+    if value_lower == "true":
+        output_value = True
+    elif value_lower == "false":
+        output_value = False
+
+    return output_value
+
+
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-c", "--config", help="JSON-formatted template for configuration")
@@ -43,6 +54,7 @@ def main():
             else:
                 message_type = config['message_type']
             if message['message_type'] != message_type:
+                print(json.dumps(message))
                 continue
             if args.value:
                 value_to_assoc = args.value
@@ -54,6 +66,8 @@ def main():
                     if 'lambda' in config and 'lambda' is not None:
                         transform_function = eval(config['lambda'])
                         value_to_assoc = transform_function(value_to_assoc)
+
+            value_to_assoc = parse_value(value_to_assoc)
 
             if args.keys:
                 keys_to_nav = args.keys
