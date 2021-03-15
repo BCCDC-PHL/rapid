@@ -1,0 +1,11 @@
+{
+    "message_type": "command_creation",
+    "keys": [
+	"filter_context",
+	"value"
+    ],
+    "message_keys": [
+	"command_invocation_directory"
+    ],
+    "lambda": "lambda x: x"
+}

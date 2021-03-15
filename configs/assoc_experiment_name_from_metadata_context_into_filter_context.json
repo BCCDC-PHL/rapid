@@ -1,0 +1,11 @@
+{
+    "keys": [
+	"filter_context",
+	"value"
+    ],
+    "message_keys": [
+	"metadata_context",
+	"experiment_name"
+    ],
+    "lambda": "lambda x: x"
+}
