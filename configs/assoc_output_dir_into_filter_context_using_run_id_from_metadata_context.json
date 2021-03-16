@@ -1,0 +1,11 @@
+{
+    "keys": [
+	"filter_context",
+	"value"
+    ],
+    "message_keys": [
+	"metadata_context",
+	"run_id"
+    ],
+    "lambda": "lambda x: os.path.join('/projects/covid-19_production/direct_fastq_symlinks_by_run', x)"
+}
